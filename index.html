@@ -91,7 +91,7 @@
         cursor:pointer;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
-        flex-shrink: 0; /* FIX 2: Prevents chips from shrinking on small screens */
+        flex-shrink: 0; /* Prevents chips from shrinking on small screens */
     }
     .chip.active{background:linear-gradient(90deg,#3c1266,#5b21b6);color:var(--accent);border-color:rgba(217,70,239,0.2)}
 
@@ -169,6 +169,21 @@
     /* subtle hover (kept) */
     .card:hover{transform:translateY(-4px);transition:transform .14s ease}
 
+    /* === SCROLLBAR STYLING FOR FILTERS (Cross-browser solution) === */
+    .filters::-webkit-scrollbar {
+      height: 2px; /* Reduced height */
+    }
+    .filters::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .filters::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2); /* Subtle light gray thumb */
+      border-radius: 4px;
+    }
+    .filters::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
     /* === RESPONSIVE STYLES (Max 768px) === */
     @media(max-width: 768px) {
         .container {
@@ -212,9 +227,9 @@
   <div class="container">
     <header>
       <div class="brand">
-        <div class="logo">Ankur</div>
+        <div class="logo">NS</div>
         <div>
-          <h1>ANKUR's Notion Pages</h1>
+          <h1>Notion Pages</h1>
           <p class="lead">All Notion pages grouped by Subject.</p>
         </div>
       </div>
@@ -226,7 +241,6 @@
         </div>
         <button id="addBtn" class="btn">Add link</button>
         <button id="exportBtn" class="btn ghost">Export</button>
-        <button id="importBtn" class="btn ghost">Import</button>
       </div>
     </header>
 
@@ -235,8 +249,9 @@
     <main class="subjects" id="subjects"></main>
 
     <footer>
-      <div>Made by ANKUR</div>
+      <div>Tip: add Notion page link and subject — changes are not saved permanently.</div>
       <div class="actions-bar">
+        <button id="importBtn" class="btn ghost">Import</button>
       </div>
     </footer>
   </div>
@@ -263,7 +278,7 @@ const DEFAULT_DATA = {
   "subjects": [
     {
       "id": "dds",
-      "name": "DDS (Design of Data Structures)",
+      "name": "DDS (Data Structures & Design)",
       "items": [
         {
           "id": "mhkd6zv5",
