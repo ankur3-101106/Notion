@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Notion Study Landing — Dashboard</title>
-  <meta name="description" content="A Page that groups Notion study pages by subject. Search, filter, add and export links." />
+  <meta name="description" content="A clean landing page that groups your Notion study pages by subject. Search, filter, add and export links." />
   <style>
     :root{
       --bg:#100b1a; /* Dark Purple-Black */
@@ -29,15 +29,14 @@
         /* UPDATED to use win.jpg */
         background-image: url('win.jpg');
         background-color: var(--bg);
-        background-size: auto;
-        background-repeat: repeat;
+        background-repeat: repeat; 
+        background-size: auto; 
         background-attachment: fixed;
-        background-position: center;
+        background-position: top left;
     }
 
     /* 1. LIQUID GLASS CONTAINER - Full Stretch with 20px Margin */
     .container{
-      /* Margin reduces on mobile via media query below */
       margin: 20px; 
       padding:28px;
       background:rgba(16, 11, 26, 0.7); 
@@ -110,17 +109,20 @@
     .card-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
     @media(min-width:560px){.card-grid{grid-template-columns:repeat(2,1fr)}}
 
-    /* LIQUID GLASS INDIVIDUAL CARD */
+    /* LIQUID GLASS INDIVIDUAL CARD - ENHANCED DEPTH */
     .card{
       display:flex;
       gap:10px;
       align-items:flex-start;
-      background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      /* Increased opacity slightly for contrast */
+      background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05)); 
       padding:12px;
       border-radius:12px;
-      border:1px solid rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12); /* Sharper border */
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      /* ADDED: Enhanced box shadow for depth effect */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
     }
     .favicon{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#be185d,#9333ea);display:flex;align-items:center;justify-content:center;font-weight:700}
     
