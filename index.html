@@ -34,12 +34,11 @@
         background-position: center;
     }
 
-    /* 1. LIQUID GLASS CONTAINER - Selective Blur */
+    /* 1. LIQUID GLASS CONTAINER - Full Stretch with 20px Margin */
     .container{
-      max-width:1100px;
-      margin:32px auto;
+      margin: 20px; 
       padding:28px;
-      background:rgba(16, 11, 26, 0.7); /* Slightly transparent dark purple background */
+      background:rgba(16, 11, 26, 0.7); 
       border-radius:18px;
       box-shadow:0 8px 60px rgba(0,0,0,0.5); 
       border: 1px solid rgba(255,255,255,0.04);
@@ -85,10 +84,12 @@
     }
     .chip.active{background:linear-gradient(90deg,#3c1266,#5b21b6);color:var(--accent);border-color:rgba(217,70,239,0.2)}
 
+    /* FIX 2: Force single column for main subject containers */
     .subjects{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
 
     @media(min-width:880px){
-      .subjects{grid-template-columns:repeat(2,1fr)}
+      /* Ensure that the media query doesn't override the vertical stacking */
+      .subjects{grid-template-columns:1fr}
     }
 
     /* LIQUID GLASS SUBJECT WRAPPER */
@@ -211,7 +212,14 @@ const DEFAULT_DATA = {
     {
       "id": "dds",
       "name": "DDS (Data Structures & Design)",
-      "items": []
+      "items": [
+        {
+          "id": "mhk8r4z8",
+          "title": "Unit 1: Intro to Data Structures",
+          "url": "https://example.com/dds-unit1",
+          "desc": ""
+        }
+      ]
     },
     {
       "id": "dbms",
@@ -300,33 +308,16 @@ const DEFAULT_DATA = {
       subjectsEl.innerHTML = '';
 
       let subjectsToRender = state.subjects;
-      let isCombinedView = false;
       
-      // Logic to combine all pages into a single section when no filter is active.
-      if (activeFilter === null) {
-        isCombinedView = true;
-        let combinedItems = [];
-        // FIX: Augment each item with its original parent ID before combining
-        state.subjects.forEach(s => {
-          const itemsWithParentId = s.items.map(item => ({
-              ...item,
-              parentId: s.id // Add the original subject's ID here
-          }));
-          combinedItems.push(...itemsWithParentId); 
-        });
-        
-        subjectsToRender = [{
-          id: 'all_combined',
-          name: 'All Pages',
-          items: combinedItems,
-          isCombined: true
-        }];
-      } else {
-        // If filter is active, display only the selected subject.
-        subjectsToRender = state.subjects.filter(s => s.id === activeFilter);
-      }
-
-      // Start rendering loop (will run once for 'All Pages' view, or once for a filtered subject)
+      // Filter out subjects with 0 links 
+      subjectsToRender = subjectsToRender.filter(s => s.items.length > 0);
+      
+      // If a specific filter is active, only render that subject.
+      if (activeFilter !== null) {
+        subjectsToRender = subjectsToRender.filter(s => s.id === activeFilter);
+      } 
+      
+      // Start rendering loop (runs multiple times if activeFilter is null, grouping by subject)
       subjectsToRender.forEach(subject=>{
         const wrapper = document.createElement('section');
         wrapper.className = 'subject';
@@ -335,13 +326,11 @@ const DEFAULT_DATA = {
 
         // Header and Meta
         const title = document.createElement('h2'); 
-        title.textContent = subject.name;
+        title.textContent = subject.name; // Shows DDS, DBMS, OOPJ, etc.
         
         const meta = document.createElement('div'); 
         meta.className='meta'; 
-        meta.textContent = isCombinedView ? 
-            `${totalItems} page(s) across all subjects` : 
-            `${totalItems} page(s)`;
+        meta.textContent = `${totalItems} page(s)`;
         
         wrapper.appendChild(title); 
         wrapper.appendChild(meta);
@@ -355,11 +344,18 @@ const DEFAULT_DATA = {
         });
 
         if(!visible.length){
-          const empty = document.createElement('div'); empty.className='empty'; empty.textContent = 'No pages yet — add one with "Add link".'; grid.appendChild(empty);
+          // Note: This block should only hit if the list was filtered by search (q) 
+          // since 0-item subjects are filtered earlier.
+          const empty = document.createElement('div'); empty.className='empty'; empty.textContent = 'No pages found matching your search.'; grid.appendChild(empty);
         } else {
           visible.forEach(it=>{
             const card = document.createElement('div'); card.className='card';
-            const fav = document.createElement('div'); fav.className='favicon'; fav.textContent = it.title.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+            const fav = document.createElement('div'); fav.className='favicon'; 
+            
+            // Generate favicon text from title (e.g., "Unit 4" -> "U4")
+            const titleWords = it.title.split(/[\s-]/).filter(word => word.length > 0);
+            fav.textContent = titleWords.length > 1 ? titleWords.map(s => s[0]).slice(0,2).join('').toUpperCase() : it.title.slice(0,2).toUpperCase();
+            
             const body = document.createElement('div'); body.className='card-body';
             const t = document.createElement('h3'); t.className='card-title'; t.textContent = it.title;
             const d = document.createElement('div'); d.className='card-desc'; d.textContent = it.desc|| 'No description';
@@ -369,13 +365,13 @@ const DEFAULT_DATA = {
             const open = document.createElement('button'); open.className='small'; open.textContent='Open';
             open.onclick = ()=> window.open(it.url, '_blank');
             const edit = document.createElement('button'); edit.className='small'; edit.textContent='Edit';
-            // Pass the correct parentId for combined view, or subject.id for filtered view
-            edit.onclick = ()=> editItem(isCombinedView ? it.parentId : subject.id, it.id);
+            // subject.id is the correct parent since we are rendering groups
+            edit.onclick = ()=> editItem(subject.id, it.id); 
             
             const remove = document.createElement('button'); remove.className='small'; remove.textContent='Remove';
-            // MODIFIED: Removed the 'if(confirm())' check
+            // No confirm check, simplified call
             remove.onclick = ()=> { 
-                removeItem(isCombinedView ? it.parentId : subject.id, it.id); 
+                removeItem(subject.id, it.id); 
             };
             actions.appendChild(open); actions.appendChild(edit); actions.appendChild(remove);
 
