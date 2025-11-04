@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Notion Pages | Ankur</title>
+  <title>Notion Pages | ANKUR</title>
   <meta name="description" content="A collection of Notion study pages by Ankur. Search, filter, add and export links." />
   <style>
     :root{
@@ -26,11 +26,11 @@
         margin:0;
         color:#e6eef6; /* Default bright text color */
         
-        /* UPDATED to use win.jpg */
+        /* UPDATED for repetition */
         background-image: url('win.jpg');
         background-color: var(--bg);
         background-repeat: repeat; 
-        background-size: cover;
+        background-size: auto; 
         background-attachment: fixed;
         background-position: top left;
     }
@@ -70,7 +70,16 @@
     .btn{background:linear-gradient(90deg,#9333ea 0%, #d946ef 100%);padding:10px 14px;border-radius:12px;border:0;color:#fff0ff;font-weight:600;cursor:pointer}
     .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
 
-    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 8px}
+    /* FIX 1: Enable horizontal scrolling for filter chips */
+    .filters{
+        display:flex;
+        gap:8px;
+        flex-wrap: nowrap; /* Prevents wrapping */
+        overflow-x: auto; /* Enables horizontal scrolling */
+        -webkit-overflow-scrolling: touch; /* Improves scrolling performance on iOS */
+        margin:18px 0 8px;
+        padding-bottom: 8px; /* Adds space for scrollbar */
+    }
     /* LIQUID GLASS CHIP */
     .chip{
         padding:8px 10px;
@@ -82,6 +91,7 @@
         cursor:pointer;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
+        flex-shrink: 0; /* FIX 2: Prevents chips from shrinking on small screens */
     }
     .chip.active{background:linear-gradient(90deg,#3c1266,#5b21b6);color:var(--accent);border-color:rgba(217,70,239,0.2)}
 
@@ -202,9 +212,9 @@
   <div class="container">
     <header>
       <div class="brand">
-        <div class="logo">Ankur</div>
+        <div class="logo">NS</div>
         <div>
-          <h1>Ankur's Notion Pages</h1>
+          <h1>ANKUR's Notion Pages</h1>
           <p class="lead">All Notion pages grouped by Subject.</p>
         </div>
       </div>
@@ -224,7 +234,11 @@
 
     <main class="subjects" id="subjects"></main>
 
-
+    <footer>
+      <div>Made by ANKUR</div>
+      <div class="actions-bar">
+      </div>
+    </footer>
   </div>
 
   <div class="modal-back" id="modalBack">
