@@ -108,7 +108,7 @@
     .subject .meta{color:var(--muted);font-size:13px;margin-top:6px}
 
     .card-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
-    @media(min-width:768px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:560px){.card-grid{grid-template-columns:repeat(2,1fr)}}
 
     .card{
       display:flex;
@@ -159,6 +159,37 @@
     .filters::-webkit-scrollbar-track { background: transparent; }
     .filters::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 4px; }
     .filters::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 255, 255, 0.3); }
+
+    /* === DROPDOWN FIXES === */
+    .field select, .field option {
+        background: var(--card) !important;
+        color: #e6eef6 !important;
+    }
+
+    .field select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e3e1ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 16px;
+        padding-right: 35px;
+    }
+
+    .field option {
+        background: var(--card);
+        color: #e6eef6;
+        padding: 8px;
+    }
+
+    .modal .field input, 
+    .modal .field textarea, 
+    .modal .field select {
+        background: rgba(255,255,255,0.05) !important;
+        color: #e6eef6 !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+    }
 
     /* === MOBILE STYLES (Max 768px) - OPTIMIZED FOR PERFORMANCE === */
     @media(max-width: 768px) {
@@ -245,6 +276,19 @@
             width: 90vw;
             max-width: 400px;
             min-width: unset;
+        }
+
+        /* Mobile dropdown fixes */
+        .field select, .field option {
+            background: rgba(16, 11, 26, 0.95) !important;
+            color: #e6eef6 !important;
+        }
+        
+        .modal .field input, 
+        .modal .field textarea, 
+        .modal .field select {
+            background: rgba(16, 11, 26, 0.8) !important;
+            color: #e6eef6 !important;
         }
 
         /* Improve touch scrolling */
