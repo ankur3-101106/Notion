@@ -77,8 +77,7 @@
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      color: #000000;
-      font-size: x-large;
+      color: #04293a
     }
 
     h1 {
@@ -117,7 +116,7 @@
       outline: none;
       color: inherit;
       font-size: 14px;
-      width: 100%;
+      width: 100%
     }
 
     .btn {
@@ -400,9 +399,9 @@
         backdrop-filter: none;
         /* Remove blur on mobile */
         -webkit-backdrop-filter: none;
-        background: rgba(16, 11, 26, 0.15);
+        background: rgba(16, 11, 26, 0.95);
         /* More opaque for better contrast */
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
       }
 
       header {
@@ -550,16 +549,88 @@
         align-self: center;
       }
     }
+
+    /* === SECURITY & LOCK SCREEN === */
+    #login-screen,
+    #dev-warning {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: opacity 0.3s ease;
+    }
+
+    #dev-warning {
+      background: #1a0505;
+      color: #ff6b6b;
+      display: none;
+      text-align: center;
+      z-index: 10000;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes shake {
+      0% {
+        transform: translateX(0)
+      }
+
+      25% {
+        transform: translateX(5px)
+      }
+
+      50% {
+        transform: translateX(-5px)
+      }
+
+      75% {
+        transform: translateX(5px)
+      }
+
+      100% {
+        transform: translateX(0)
+      }
+    }
+
+    .shake {
+      animation: shake 0.3s ease-in-out;
+    }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div id="dev-warning">
+    <div class="logo" style="background:linear-gradient(135deg,#ef4444,#b91c1c);color:white;font-size:24px">!</div>
+    <h1>Developer Tools Detected</h1>
+    <p>Access to this page is blocked while developer tools are open.</p>
+  </div>
+
+  <div id="login-screen">
+    <div class="logo" style="width:80px;height:80px;font-size:28px;margin-bottom:10px">NS</div>
+    <h2 style="margin:0">Protected Page</h2>
+    <p style="color:var(--muted);margin:0">Enter password to unlock</p>
+    <div class="field" style="margin-top:10px">
+      <input type="password" id="pwdInput" placeholder="Password"
+        style="text-align:center;min-width:260px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)">
+    </div>
+    <button id="loginBtn" class="btn" style="min-width:120px">Unlock</button>
+  </div>
+
+  <div class="container hidden" id="mainContent">
     <header>
       <div class="brand">
         <div class="logo">NS</div>
         <div>
-          <h1>Notion Pages Archive</h1>
+          <h1>Ankur's Notion Pages</h1>
           <p class="lead">All Notion pages grouped by Subject.</p>
         </div>
       </div>
@@ -1017,7 +1088,7 @@
     exportBtn.onclick = () => {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'notion.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = 'notion-study-export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     }
 
     importBtn.onclick = () => fileImport.click();
@@ -1048,8 +1119,65 @@
     function init() { renderFilters(); render(); }
     init();
 
+    // === SECURITY LOGIC ===
+    const loginScreen = document.getElementById('login-screen');
+    const mainContent = document.getElementById('mainContent');
+    const pwdInput = document.getElementById('pwdInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const devWarning = document.getElementById('dev-warning');
+
+    // Simple hash for "IAMGAY"
+    const TARGET_HASH = -2142646166;
+
+    function simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return hash;
+    }
+
+    function attemptLogin() {
+      const pwd = pwdInput.value;
+      if (simpleHash(pwd) === TARGET_HASH) {
+        loginScreen.style.opacity = '0';
+        setTimeout(() => {
+          loginScreen.style.display = 'none';
+          mainContent.classList.remove('hidden');
+        }, 300);
+      } else {
+        pwdInput.style.borderColor = '#ef4444';
+        pwdInput.classList.add('shake');
+        setTimeout(() => {
+          pwdInput.style.borderColor = 'rgba(255,255,255,0.1)';
+          pwdInput.classList.remove('shake');
+        }, 500);
+      }
+    }
+
+    loginBtn.addEventListener('click', attemptLogin);
+    pwdInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
+
+    // DevTools Detection & Blocking
+    setInterval(() => {
+      const threshold = 160;
+      if ((window.outerWidth - window.innerWidth > threshold) || (window.outerHeight - window.innerHeight > threshold)) {
+        devWarning.style.display = 'flex';
+        mainContent.classList.add('hidden'); // Ensure content is hidden
+      } else {
+        devWarning.style.display = 'none';
+        if (loginScreen.style.display === 'none') mainContent.classList.remove('hidden');
+      }
+    }, 1000);
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'U')) e.preventDefault();
+    });
+
   </script>
 </body>
 
 </html>
-
